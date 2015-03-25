@@ -127,6 +127,23 @@ RSpec.describe ApplicationDraftsController do
 
     end
 
+    describe 'POST apply' do
+      let(:draft) { create :application_draft }
+      let(:application) { create :application }
+
+      before do
+        allow_any_instance_of(ApplicationDraft).to receive(:ready?).and_return(true)
+        allow_any_instance_of(ApplicationDraft).to receive(:application).and_return(application)
+      end
+
+      it 'creates an application and redirects to edit' do
+        expect { post :apply, application_draft: draft }.to \
+          change { Application.count }.by 1
+        expect(response).to redirect_to [:edit, assigns[:application]]
+      end
+    end
+        
+
     describe 'PATCH update' do
       let(:draft) { create :application_draft }
 
