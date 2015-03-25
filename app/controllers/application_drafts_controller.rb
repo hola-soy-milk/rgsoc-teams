@@ -50,6 +50,17 @@ class ApplicationDraftsController < ApplicationController
     render :new
   end
 
+  def apply
+    application = application_draft.application
+    if application.save
+      update_student!
+      notice = "Your Application was submitted."
+      redirect_to [:edit, application_draft], notice: notice
+    else
+      render :new
+    end
+  end
+
   protected
 
   def application_draft
