@@ -127,23 +127,6 @@ RSpec.describe ApplicationDraftsController do
 
     end
 
-    describe 'POST apply' do
-      let(:draft) { create :application_draft }
-      let(:application) { create :application }
-
-      before do
-        allow_any_instance_of(ApplicationDraft).to receive(:ready?).and_return(true)
-        allow_any_instance_of(ApplicationDraft).to receive(:application).and_return(application)
-      end
-
-      it 'creates an application and redirects to edit' do
-        expect { post :apply, application_draft: draft }.to \
-          change { Application.count }.by 1
-        expect(response).to redirect_to [:edit, assigns[:application]]
-      end
-    end
-        
-
     describe 'PATCH update' do
       let(:draft) { create :application_draft }
 
@@ -196,6 +179,23 @@ RSpec.describe ApplicationDraftsController do
           expect(response).to render_template 'new'
           expect(flash[:notice]).to be_present
         end
+      end
+    end
+
+    describe 'PUT apply' do
+      let(:draft) { create :application_draft }
+      let(:application) { build :application }
+
+      before do
+        create :student_role, user: user, team: draft.team
+        allow_any_instance_of(ApplicationDraft).to receive(:ready?).and_return(true)
+        allow_any_instance_of(ApplicationDraft).to receive(:application).and_return(application)
+      end
+
+      it 'creates an application and redirects to edit' do
+        expect { put :apply, id: draft.to_param }.to \
+          change { Application.count }.by 1
+        expect(response).to redirect_to [:edit, assigns[:application_draft]]
       end
     end
 
